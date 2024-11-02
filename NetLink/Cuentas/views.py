@@ -284,7 +284,6 @@ class UsuariosView(APIView):
             return Response({'message': 'Usuario eliminado correctamente'}, status=status.HTTP_204_NO_CONTENT)
         except Usuario.DoesNotExist:
             return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
-          
 class UsuarioQueryApiView(APIView):
     def get(self, request, pkid, *args, **kargs):
         miUsuario=Usuario.objects.filter(id=pkid).first()
