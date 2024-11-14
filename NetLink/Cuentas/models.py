@@ -85,9 +85,9 @@ class AcademicInformation(models.Model):
     academicDiscipline = models.CharField(max_length=30)
     startDate = models.DateField(max_length=10)
     endDate = models.DateField(max_length=10)
-    aditionalActivities = ArrayField(models.CharField(max_length=100), blank=True)
+    aditionalActivities = ArrayField(models.CharField(max_length=30), blank=True)
     description = models.CharField(max_length=30)
-    abilities= ArrayField(models.CharField(max_length=100), blank=True)
+    abilities= ArrayField(models.CharField(max_length=30), blank=True)
     
     def getEducativeInstitution(self):
         return self.educativeInstitution
