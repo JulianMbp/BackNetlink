@@ -5,7 +5,7 @@ urlpatterns=[
     path('login', validateApiView.as_view()),
 
     path('Llist', laboralInformationApiView.as_view()),
-    path('getLinfo', laboralInformationApiView.as_view()),
+    path('getLinfo/<int:pkid>', laboralInformationApiView.as_view()),
     path('laboralInfoAdd', laboralInformationApiView.as_view()),
     
     path('getAll', experienceApiView.as_view()),
@@ -15,7 +15,7 @@ urlpatterns=[
     path('deleteExperience/<int:pkid>', experienceApiView.as_view()),
     
     path('academicList', academicInformationApiView.as_view()),
-    path('getAcademicInfo', academicInformationApiView.as_view()),
+    path('getAcademicInfo/<int:pkid>', academicInformationApiView.as_view()),
     path('academicInfoAdd', academicInformationApiView.as_view()),
 
     path('list', UsuariosView.as_view()),
