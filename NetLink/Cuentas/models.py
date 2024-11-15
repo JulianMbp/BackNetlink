@@ -3,9 +3,9 @@ from django.contrib.postgres.fields import ArrayField
 
 # Create your models here.
 class Experience(models.Model):
-    company = models.CharField(max_length=20)
-    position = models.CharField(max_length=20)
-    description = models.CharField(max_length=100)
+    company = models.CharField(max_length=30)
+    position = models.CharField(max_length=30)
+    description = models.CharField(max_length=256)
     def getCompany(self):
         return self.company
     def setCompany(self, company):
@@ -21,11 +21,11 @@ class Experience(models.Model):
 
 class laboralInformation(models.Model):
     latestPosition = models.ForeignKey('Experience', on_delete=models.CASCADE, related_name='+')
-    abilities = ArrayField(models.CharField(max_length=100), blank=True)
+    abilities = ArrayField(models.CharField(max_length=30), blank=True)
     previousExperiences = models.ManyToManyField(Experience)
     lookingForEmployement = models.BooleanField()
-    desiredPosition = models.CharField(max_length=20)
-    desiredCountry = models.CharField(max_length=20)
+    desiredPosition = models.CharField(max_length=30)
+    desiredCountry = models.CharField(max_length=30)
     telecommuting = models.BooleanField()
     def getLatestPosition(self):
         return self.latestPosition
@@ -85,9 +85,9 @@ class AcademicInformation(models.Model):
     academicDiscipline = models.CharField(max_length=30)
     startDate = models.DateField(max_length=10)
     endDate = models.DateField(max_length=10)
-    aditionalActivities = ArrayField(models.CharField(max_length=100), blank=True)
+    aditionalActivities = ArrayField(models.CharField(max_length=30), blank=True)
     description = models.CharField(max_length=30)
-    abilities= ArrayField(models.CharField(max_length=100), blank=True)
+    abilities= ArrayField(models.CharField(max_length=30), blank=True)
     
     def getEducativeInstitution(self):
         return self.educativeInstitution
