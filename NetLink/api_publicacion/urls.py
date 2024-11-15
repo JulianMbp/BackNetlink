@@ -1,5 +1,9 @@
 from django.urls import path
+from django.contrib import admin
 from .views import PublicacionView
+from .models import publicacion
+
+admin.site.register(publicacion)
 #url de publicacion
 urlpatterns = [
     path('publicacion_list', PublicacionView.as_view()),

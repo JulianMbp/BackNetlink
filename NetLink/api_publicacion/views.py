@@ -19,13 +19,23 @@ class PublicacionView(APIView):
             data={
                 'titulo':request.data.get('titulo'),
                 'descripcion':request.data.get('descripcion'),
-                'multimedia':request.data.get('multimedia'),
+                'multimedia':request.FILES.get('multimedia'),
             }
             serializador=publicacion_serializer(data=data)
             if serializador.is_valid():
                 serializador.save()
-                return Response(serializador.data, status=status.HTTP_201_CREATED)
-            return Response(serializador.data, status=status.HTTP_400_BAD_REQUEST)
+                return Response( {
+                        "message": "Publicacion creada con exito",
+                        "data": serializador.data
+                        }, 
+                    status=status.HTTP_201_CREATED
+                )
+            else:
+                return Response(
+                    {
+                        "message": "Error al crear publicacion", "data":None
+                    },
+                status=status.HTTP_400_BAD_REQUEST)
     def put(self, request, pkid):
         mi_publicacion=publicacion.objects.filter(id=pkid).update(
             titulo=request.data.get('titulo'),
