@@ -8,5 +8,5 @@ from django.utils import timezone
 class publicacion(models.Model):
     titulo=models.CharField(max_length=50)
     descripcion=models.CharField(max_length=280)
-    multimedia=models.ImageField(upload_to='publicaciones/')
+    multimedia = models.TextField() 
     date_created = models.DateTimeField(default=timezone.now)
