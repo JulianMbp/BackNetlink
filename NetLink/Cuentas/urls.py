@@ -17,6 +17,7 @@ urlpatterns=[
     path('academicList', academicInformationApiView.as_view()),
     path('getAcademicInfo/<int:pkid>', academicInformationApiView.as_view()),
     path('academicInfoAdd', academicInformationApiView.as_view()),
+    path('academicInfoUpdate/<int:pkid>', academicInformationApiView.as_view()),
 
     path('list', UsuariosView.as_view()),
     path('crear-usuario', UsuariosView.as_view()),
