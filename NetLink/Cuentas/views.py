@@ -6,7 +6,7 @@ from rest_framework import status,permissions
 from Cuentas.models import laboralInformation
 from django.db import models
 from Cuentas.models import Experience, AcademicInformation, Usuario
-from Cuentas.serializer import laboralInformationSerializer, academicInformationSerializer, experienceSerializer, usuario_serializer
+from Cuentas.serializer import laboralInformationSerializer, academicInformationSerializer, experienceSerializer, usuarioSerializer
 
 class laboralInformationApiView(APIView):
     def get(self, request, *args, **kwargs):
@@ -210,3 +210,40 @@ class validateApiView(APIView):
         if Usuario.objects.filter(email=data['email'], contrasena=data['contrasena']).exists():
             return Response(True, status=status.HTTP_200_OK) #ver perfil
         return Response(False, status=status.HTTP_400_BAD_REQUEST)
+    
+class CombinedInfoApiView(APIView):
+    def get(self, request, id, *args, **kwargs):
+        try:
+            # Obtener información laboral, filtrando por id
+            laboral_info = laboralInformation.objects.filter(id=id).first()
+            if not laboral_info:
+                return Response({'error': 'Información laboral no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+
+            laboral_serializer = laboralInformationSerializer(laboral_info)
+
+            # Obtener información académica, filtrando por id
+            academic_info = AcademicInformation.objects.filter(id=id).first()
+            if not academic_info:
+                return Response({'error': 'Información académica no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+
+            academic_serializer = academicInformationSerializer(academic_info)
+
+            # Obtener información de usuario, filtrando por id
+            usuario = Usuario.objects.filter(id=id).first()
+            if not usuario:
+                return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+            usuario_serializer = usuarioSerializer(usuario)  # Ahora se usa UsuarioSerializer
+
+            # Combinar la información en un solo diccionario
+            combined_data = {
+                'laboralInformation': laboral_serializer.data,
+                'academicInformation': academic_serializer.data,
+                'usuario': usuario_serializer.data,
+            }
+
+            return Response(combined_data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    

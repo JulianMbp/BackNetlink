@@ -34,7 +34,7 @@ class academicInformationSerializer(serializers.ModelSerializer):
         model = AcademicInformation
         fields =('id', 'educativeInstitution', 'title','academicDiscipline','startDate', 'endDate','aditionalActivities', 'description','abilities')
 
-class usuario_serializer(serializers.ModelSerializer):
+class usuarioSerializer(serializers.ModelSerializer):
     class Meta:
         model=Usuario
         fields=[
