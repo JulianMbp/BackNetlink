@@ -10,3 +10,4 @@ class publicacion(models.Model):
     descripcion=models.CharField(max_length=280)
     multimedia = models.TextField() 
     date_created = models.DateTimeField(default=timezone.now)
+#probando el git
