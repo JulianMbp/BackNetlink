@@ -6,8 +6,8 @@ from rest_framework import status,permissions
 from Cuentas.models import laboralInformation
 from django.db import models
 from Cuentas.models import Experience, AcademicInformation, Usuario
-from Cuentas.serializer import laboralInformationSerializer, academicInformationSerializer, experienceSerializer, usuario_serializer
-
+from Cuentas.serializer import laboralInformationSerializer, academicInformationSerializer, experienceSerializer, usuarioSerializer
+import base64
 class laboralInformationApiView(APIView):
     def get(self, request, *args, **kwargs):
         laboralList = laboralInformation.objects.all()
@@ -139,31 +139,43 @@ class academicInformationApiView(APIView):
 class UsuariosView(APIView):
     def get(self, request, *args, **kwargs):
             lista_usuarios=Usuario.objects.all()
-            serializer_usuarios=usuario_serializer(lista_usuarios, many=True)
+            serializer_usuarios=usuarioSerializer(lista_usuarios, many=True)
             return Response(serializer_usuarios.data,status=status.HTTP_200_OK)
     
     
     def post(self, request, *args, **kwargs):
-        data = {
-            'nombre': request.data.get('nombre'),
-            'contrasena': request.data.get('contrasena'),
-            'fechaNacimiento': request.data.get('fechaNacimiento'),
-            'email': request.data.get('email'),
-            'paisOrigen': request.data.get('paisOrigen')       
-        }
-
-        serializador = usuario_serializer(data=data)
-        if serializador.is_valid():
-            serializador.save()
-            return Response(
-                {"message": "Usuario creado correctamente", "data": serializador.data},
-                status=status.HTTP_201_CREATED
-            )
+        
+            # Leer y codificar el archivo de imagen en base64
+            imagen = request.FILES.get('imagen')
+            if imagen:
+                imagen_bytes = imagen.read()
+                imagen_base64 = base64.b64encode(imagen_bytes).decode('utf-8')
+            else:
+                imagen_base64 = None  # Si no hay imagen, establecer como None
     
-        return Response(
-            {"message": "El usuario no se pudo crear", "errors": serializador.errors},
-            status=status.HTTP_400_BAD_REQUEST
-        )
+            # Crear el diccionario con los datos
+            data = {
+                'nombre': request.data.get('nombre'),
+                'contrasena': request.data.get('contrasena'),
+                'fechaNacimiento': request.data.get('fechaNacimiento'),
+                'email': request.data.get('email'),
+                'paisOrigen': request.data.get('paisOrigen'),
+                'imagen': imagen_base64,  # Agregar la imagen codificada
+            }
+    
+            # Usar el serializer para validar y guardar
+            serializador = usuarioSerializer(data=data)
+            if serializador.is_valid():
+                serializador.save()  # Guardar el usuario
+                return Response(
+                    {"message": "Usuario creado correctamente", "data": serializador.data},
+                    status=status.HTTP_201_CREATED
+                )
+            return Response(
+                {"message": "El usuario no se pudo crear", "errors": serializador.errors},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
     
     def put(self, request, pkid):
     # Intenta actualizar el usuario y guarda la cantidad de registros afectados
@@ -198,7 +210,7 @@ class UsuariosView(APIView):
 class UsuarioQueryApiView(APIView):
     def get(self, request, pkid, *args, **kargs):
         miUsuario=Usuario.objects.filter(id=pkid).first()
-        serializer_usuario = usuario_serializer(miUsuario)
+        serializer_usuario = usuarioSerializer(miUsuario)
         return Response(serializer_usuario.data, status=status.HTTP_200_OK)
 
 class validateApiView(APIView):
@@ -210,3 +222,39 @@ class validateApiView(APIView):
         if Usuario.objects.filter(email=data['email'], contrasena=data['contrasena']).exists():
             return Response(True, status=status.HTTP_200_OK) #ver perfil
         return Response(False, status=status.HTTP_400_BAD_REQUEST)
+    
+class CombinedInfoApiView(APIView):
+    def get(self, request, id, *args, **kwargs):
+        try:
+            # Obtener información laboral, filtrando por id
+            laboral_info = laboralInformation.objects.filter(id=id).first()
+            if not laboral_info:
+                return Response({'error': 'Información laboral no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+
+            laboral_serializer = laboralInformationSerializer(laboral_info)
+
+            # Obtener información académica, filtrando por id
+            academic_info = AcademicInformation.objects.filter(id=id).first()
+            if not academic_info:
+                return Response({'error': 'Información académica no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+
+            academic_serializer = academicInformationSerializer(academic_info)
+
+            # Obtener información de usuario, filtrando por id
+            usuario = Usuario.objects.filter(id=id).first()
+            if not usuario:
+                return Response({'error': 'Usuario no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+            usuario_serializer = usuarioSerializer(usuario)
+
+            # Combinar la información en un solo diccionario
+            combined_data = {
+                'laboralInformation': laboral_serializer.data,
+                'academicInformation': academic_serializer.data,
+                'usuario': usuario_serializer.data,  # Incluye la imagen automáticamente
+            }
+
+            return Response(combined_data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
