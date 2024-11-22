@@ -36,12 +36,12 @@ class academicInformationSerializer(serializers.ModelSerializer):
 
 class usuarioSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Usuario
-        fields=[
-            'id',
-            'nombre',
-            'contrasena',
-            'fechaNacimiento',
-            'email',
-            'paisOrigen'
-        ]
+        model = Usuario
+        fields = ['id', 'nombre', 'contrasena', 'fechaNacimiento', 'email', 'paisOrigen', 'imagen']
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        # No necesitas hacer cambios si no manejas multimedia directamente
+        if not instance.imagen:
+            data['imagen'] = None  # Si no hay imagen, establecerla como None
+        return data

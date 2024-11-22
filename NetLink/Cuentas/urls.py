@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import laboralInformationApiView, academicInformationApiView, experienceApiView, UsuariosView, UsuarioQueryApiView, validateApiView, CombinedInfoApiView  
+from .views import laboralInformationApiView, academicInformationApiView, experienceApiView, UsuariosView, UsuarioQueryApiView, validateApiView, CombinedInfoApiView
 
 urlpatterns=[
     path('login', validateApiView.as_view()),
@@ -25,4 +25,5 @@ urlpatterns=[
     path ('consultar/<int:pkid>', UsuarioQueryApiView.as_view(), name ="consultar"),
 
     path('combined-info/<int:id>/', CombinedInfoApiView.as_view(), name='combined-info')
+
 ]
