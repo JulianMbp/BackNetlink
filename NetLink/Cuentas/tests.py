@@ -36,7 +36,7 @@ class test_cuentasl(TestCase):
     def test_create_laboral(self):
         response = self.client.post(
             '/api/Netlink/laboralInfoAdd',
-            data={
+            data= json.dumps({
                 "latestPosition":{
                         "company": "A Company",
                         "position": "A position",
@@ -44,7 +44,7 @@ class test_cuentasl(TestCase):
                     },
                 "abilities":["Ability"],
                 "previousExperiences":[{
-                        "company": "A Company",
+                        'company': 'A Company',
                         "position": "A position",
                         "description": "It's a very important position"
                     }],
@@ -52,7 +52,8 @@ class test_cuentasl(TestCase):
                 "desiredPosition":"A great position",
                 "desiredCountry":"un country",
                 "telecommuting":True
-            }
+            }),
+            content_type='application/json'
         )
         self.assertIn(response.status_code, (200, 201))
         filtered_laboral=laboralInformation.objects.filter(desiredPosition='A great position').first()
@@ -86,7 +87,7 @@ class test_cuentasA(TestCase):
     def test_create_academic(self):
         response = self.client.post(
             '/api/Netlink/academicInfoAdd',
-            data={
+            data=json.dumps({
                 "educativeInstitution":"Another insti",
                 "title":"another title",
                 "academicDiscipline":"another disc",
@@ -95,7 +96,8 @@ class test_cuentasA(TestCase):
                 "aditionalActivities":["Another one"],
                 "description" :"Another desc",
                 "abilities":["Another one"]
-            }
+            }),
+            content_type='application/json'
         )
         self.assertIn(response.status_code, (200, 201))
         filtered_academic=AcademicInformation.objects.filter(educativeInstitution='Another insti').first()
