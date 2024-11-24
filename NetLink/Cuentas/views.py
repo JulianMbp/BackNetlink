@@ -48,6 +48,20 @@ class laboralInformationApiView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def put(self, request, pkid, *args, **kwargs):
+        try:
+            experience = Experience.objects.get(id=pkid)
+        except Experience.DoesNotExist:
+            return Response({'error': 'Vehículo no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = experienceSerializer(experience, data=request.data, partial=True) 
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class experienceApiView(APIView):
     def get(self, request, *args, **kwargs):
@@ -259,6 +273,7 @@ class validateApiView(APIView):
             return Response(True, status=status.HTTP_200_OK) #ver perfil
         return Response(False, status=status.HTTP_400_BAD_REQUEST)
     
+
 class CombinedInfoApiView(APIView):
     def get(self, request, id, *args, **kwargs):
         try:
@@ -331,4 +346,39 @@ class CombinedInfoApiView(APIView):
 
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+class academicInfoUpdate(APIView):
+    def put(self, request, pkid, *args, **kwargs):
+        try:
+            academic = AcademicInformation.objects.get(id=pkid)
+        except AcademicInformation.DoesNotExist:
+            return Response({'error': 'Informacion no encontrada.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        abilities = academic.abilities
+        
+        aditionalActivities = academic.aditionalActivities
+        
+        for i in request.data.get('abilities'):
+            abilities.append(i)
+            
+        for i in request.data.get('aditionalActivities'):
+            aditionalActivities.append(i)
+        
+        data = {
+            'educativeInstitution':request.data.get('educativeInstitution'),
+            'title':request.data.get('title'),
+            'academicDiscipline':request.data.get('academicDiscipline'),
+            'startDate':request.data.get('startDate'),
+            'endDate':request.data.get('endDate'),
+            'aditionalActivities': aditionalActivities,
+            'description': request.data.get('description'),
+            'abilities': abilities
+        }
+                
+        serializer = academicInformationSerializer(academic,data=data, partial=True) 
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        print(request.data)
+        print(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    
