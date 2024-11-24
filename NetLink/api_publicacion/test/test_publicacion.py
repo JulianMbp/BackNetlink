@@ -1,7 +1,7 @@
 import json
 from django.test import TestCase
 from django.urls import reverse
-from publicacion.models import Publicacion
+from api_publicacion.models import Publicacion
 
 class test_publicacion(TestCase):
     @classmethod
