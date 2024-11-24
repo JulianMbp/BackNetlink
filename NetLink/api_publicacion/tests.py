@@ -20,13 +20,11 @@ class PublicacionTests(TestCase):
         self.delete_url = f'/api/publicacion/publicacion_delete/{self.publicacion_test.id}'
 
     def test_get_publicaciones(self):
-        """Test para obtener lista de publicaciones"""
         response = self.client.get(self.list_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(len(response.json()) > 0)
 
     def test_create_publicacion(self):
-        """Test para crear una publicación"""
         data = {
             'titulo': 'Nuevo Título',
             'descripcion': 'Nueva Descripción',
@@ -44,7 +42,6 @@ class PublicacionTests(TestCase):
         self.assertEqual(nueva_publicacion.descripcion, 'Nueva Descripción')
 
     def test_update_publicacion(self):
-        """Test para actualizar una publicación"""
         data = {
             'titulo': 'Título Actualizado',
             'descripcion': 'Descripción Actualizada',
@@ -61,7 +58,6 @@ class PublicacionTests(TestCase):
         self.assertEqual(publicacion_actualizada.titulo, 'Título Actualizado')
 
     def test_delete_publicacion(self):
-        """Test para eliminar una publicación"""
         response = self.client.delete(self.delete_url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(
@@ -69,13 +65,11 @@ class PublicacionTests(TestCase):
         )
 
     def test_get_publicacion_not_found(self):
-        """Test para verificar comportamiento con ID inexistente"""
         url = '/api/publicacion/publicacion_detail/99999'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_create_publicacion_invalid_data(self):
-        """Test para verificar validación de datos"""
         data = {
             'titulo': '',
             'descripcion': 'Test Descripción',
