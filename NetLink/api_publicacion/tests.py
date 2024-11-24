@@ -1,54 +1,84 @@
 import json
 from django.test import TestCase
 from django.urls import reverse
-from api_publicacion.models import Publicacion
+from rest_framework import status
+from .models import publicacion
+import json
 
-class test_publicacion(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        Publicacion.objects.create(
-            titulo='Test Título', 
+class PublicacionTests(TestCase):
+    def setUp(self):
+        """Configuración inicial para cada test"""
+        self.publicacion_test = publicacion.objects.create(
+            titulo='Test Título',
             descripcion='Test Descripción',
-            multimedia='',
-            )
-    def tearDown(self):
-        pass
-class test_publicacion_list(test_publicacion):
-    def test_view_publicacion_list(self):
-        response=self.client.get(reverse('publicacion_list'))
-        self.assertEqual(response.status_code,200)
-        self.assertContains(len(response.data),1)
+            multimedia=''
+        )
+        
+        # URLs definidas según urls.py
+        self.list_url = '/api/publicacion/publicacion_list'
+        self.create_url = '/api/publicacion/publicacion_create'
+        self.update_url = f'/api/publicacion/publicacion_update/{self.publicacion_test.id}'
+        self.delete_url = f'/api/publicacion/publicacion_delete/{self.publicacion_test.id}'
+
+    def test_get_publicaciones(self):
+        response = self.client.get(self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(len(response.json()) > 0)
+
     def test_create_publicacion(self):
-        response=self.client.post(reverse('publicacion_list'),{
-            'titulo':'Test Título',
-            'descripcion':'Test Descripción',
-            'multimedia':'',
-        })
-        self.assertEqual(response.status_code,[200,201])
-        filtered_publicacion=Publicacion.objects.filter(titulo='Test Título').first()
-        self.assertEqual(filtered_publicacion.descripcion,'Test Descripción')
-    def test_update_publicacion(self):
-        mi_publicacion=Publicacion.objects.create(
-            titulo='Test Título',
-            descripcion='Test Descripción',
-            multimedia='',
-        )
-        valid_publicacion={
-            'titulo':'Título',
-            'descripcion':'Descripción',
-            'multimedia':'',
+        data = {
+            'titulo': 'Nuevo Título',
+            'descripcion': 'Nueva Descripción',
+            'multimedia': ''
         }
-        url=reverse('actualizar_publicacion',kwargs={'pkid':mi_publicacion.id})
-        valid_publicacion_json=json.dumps(valid_publicacion)
-        response=self.client.put(url,valid_publicacion_json,content_type='application/json')
-        self.assertEqual(response.status_code,[200,201])
-    def test_delete_publicacion(self):
-        mi_publicacion=Publicacion.objects.create(
-            titulo='Test Título',
-            descripcion='Test Descripción',
-            multimedia='',
+        response = self.client.post(
+            self.create_url, 
+            json.dumps(data),
+            content_type='application/json'
         )
-        url=reverse('eliminar_publicacion',kwargs={'pkid':mi_publicacion.id})
-        response=self.client.delete(url)
-        self.assertEqual(response.status_code,204)
-        self.assertFalse(Publicacion.objects.filter(titulo='Test Título').exists())
+        self.assertIn(response.status_code, [status.HTTP_200_OK, status.HTTP_201_CREATED])
+        
+        nueva_publicacion = publicacion.objects.filter(titulo='Nuevo Título').first()
+        self.assertIsNotNone(nueva_publicacion)
+        self.assertEqual(nueva_publicacion.descripcion, 'Nueva Descripción')
+
+    def test_update_publicacion(self):
+        data = {
+            'titulo': 'Título Actualizado',
+            'descripcion': 'Descripción Actualizada',
+            'multimedia': ''
+        }
+        response = self.client.put(
+            self.update_url,
+            json.dumps(data),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        publicacion_actualizada = publicacion.objects.get(id=self.publicacion_test.id)
+        self.assertEqual(publicacion_actualizada.titulo, 'Título Actualizado')
+
+    def test_delete_publicacion(self):
+        response = self.client.delete(self.delete_url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(
+            publicacion.objects.filter(id=self.publicacion_test.id).exists()
+        )
+
+    def test_get_publicacion_not_found(self):
+        url = '/api/publicacion/publicacion_detail/99999'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_create_publicacion_invalid_data(self):
+        data = {
+            'titulo': '',
+            'descripcion': 'Test Descripción',
+            'multimedia': ''
+        }
+        response = self.client.post(
+            self.create_url,
+            json.dumps(data),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
