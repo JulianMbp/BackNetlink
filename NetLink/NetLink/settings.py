@@ -64,7 +64,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4200",
+    "http://localhost:4200", "http://netlinkfront-g6gfhvc6dhbda2aw.eastus2-01.azurewebsites.net"
 ]
 
 ROOT_URLCONF = 'NetLink.urls'
