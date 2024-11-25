@@ -33,7 +33,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['https://netlinkback-dududxh6emc7hkfz.eastus2-01.azurewebsites.net']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -64,7 +64,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4200","https://netlinkback-dududxh6emc7hkfz.eastus2-01.azurewebsites.net"
+    "http://localhost:4200"
 ]
 
 ROOT_URLCONF = 'NetLink.urls'
