@@ -5,3 +5,5 @@ env/
 venv/
 ENV/
 env
+.coverage
+.env
