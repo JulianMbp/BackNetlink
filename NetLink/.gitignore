@@ -1,0 +1,9 @@
+# envirorments
+.venv
+.env
+env/
+venv/
+ENV/
+env
+.coverage
+.env
