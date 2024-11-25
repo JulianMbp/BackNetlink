@@ -142,39 +142,45 @@ class AcademicInformation(models.Model):
 
 
 class Usuario(models.Model):
-    nombre=models.CharField(max_length=200)
-    contrasena=models.CharField(max_length=30)
-    fechaNacimiento=models.DateField()
-    email=models.CharField(max_length=100)
-    paisOrigen=models.CharField(max_length=30)
-
+    nombre = models.CharField(max_length=200)
+    contrasena = models.CharField(max_length=30)
+    fechaNacimiento = models.DateField()
+    email = models.CharField(max_length=100)
+    paisOrigen = models.CharField(max_length=30)
+    imagen = models.TextField(null=True, blank=True)  # Almacenar imagen como texto codificado en base64
 
     def setNombre(self, nombre):
         self.nombre = nombre
-    
+
     def getAbilities(self):
         return self.nombre
-    
+
     def setContrasena(self, contrasena):
         self.contrasena = contrasena
-    
+
     def getContrasena(self):
         return self.contrasena 
-    
+
     def setFechaNacimiento(self, fechaNacimiento):
         self.fechaNacimiento = fechaNacimiento
-    
+
     def getFechaNacimiento(self):
         return self.fechaNacimiento
-    
+
     def setEmail(self, email):
         self.email = email
-    
+
     def getEmail(self):
         return self.email
-    
+
     def setPaisOrigen(self, paisOrigen):
         self.paisOrigen = paisOrigen
-    
+
     def getPaisOrigen(self):
         return self.paisOrigen
+
+    def setImagen(self, imagen):
+        self.imagen = imagen
+
+    def getImagen(self):
+        return self.imagen

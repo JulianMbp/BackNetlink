@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import laboralInformationApiView, academicInformationApiView, experienceApiView, UsuariosView, UsuarioQueryApiView, validateApiView
+from .views import laboralInformationApiView, academicInformationApiView, experienceApiView, UsuariosView, UsuarioQueryApiView, validateApiView, CombinedInfoApiView
 
 urlpatterns=[
     path('login', validateApiView.as_view()),
@@ -17,10 +17,15 @@ urlpatterns=[
     path('academicList', academicInformationApiView.as_view()),
     path('getAcademicInfo/<int:pkid>', academicInformationApiView.as_view()),
     path('academicInfoAdd', academicInformationApiView.as_view()),
+    path('academicInfoUpdate/<int:pkid>', academicInformationApiView.as_view()),
+    path('laboralInfoUpdate/<int:pkid>', laboralInformationApiView.as_view()),
 
     path('list', UsuariosView.as_view()),
     path('crear-usuario', UsuariosView.as_view()),
     path ('actualizar-usuario/<int:pkid>', UsuariosView.as_view(), name="actulizar_usuario"),
     path ('eliminar-usuario/<int:pkid>', UsuariosView.as_view(), name="eliminar_usuario"),
-    path ('consultar/<int:pkid>', UsuarioQueryApiView.as_view(), name ="consultar")
+    path ('consultar/<int:pkid>', UsuarioQueryApiView.as_view(), name ="consultar"),
+
+    path('combined-info/<int:id>/', CombinedInfoApiView.as_view(), name='combined-info')
+
 ]
